@@ -8,6 +8,13 @@
         x = 0;
         y = 0;
     }
+
+    public GameObject(int newX, int newY)
+    {
+        x = newX;
+        y = newY;
+    }
+
     ~GameObject() // 소멸자도!
     {
 
@@ -24,7 +31,8 @@
 
     public virtual void Render()
     {
-
+        Console.SetCursorPosition(x, y);
+        Console.Write(shape);
     }
 
     public char shape;                                                             

@@ -1,18 +1,18 @@
-﻿class Wall : GameObject
+﻿class Monster : GameObject
 {
-    public Wall()
+    public Monster()
     {
-        shape = '*';
+        shape = 'M';
     }
 
-    public Wall(int newX, int newY)
+    public Monster(int newX, int newY)
     {
-        shape = '*';
+        shape = 'M';
         x = newX;
         y = newY;
     }
 
-    ~Wall()
+    ~Monster()
     {
 
     }

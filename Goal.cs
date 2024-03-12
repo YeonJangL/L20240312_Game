@@ -1,18 +1,18 @@
-﻿class Wall : GameObject
+﻿class Goal : GameObject
 {
-    public Wall()
+    public Goal()
     {
-        shape = '*';
+        shape = 'G';
     }
 
-    public Wall(int newX, int newY)
+    public Goal(int newX, int newY)
     {
-        shape = '*';
+        shape = 'G';
         x = newX;
         y = newY;
     }
 
-    ~Wall()
+    ~Goal()
     {
 
     }
