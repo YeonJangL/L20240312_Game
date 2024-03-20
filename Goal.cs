@@ -1,15 +1,21 @@
-﻿class Goal : GameObject
+﻿
+
+
+class Goal : GameObject
 {
     public Goal()
     {
         shape = 'G';
+        renderOrder = 100;
     }
 
     public Goal(int newX, int newY)
     {
         shape = 'G';
+
         x = newX;
         y = newY;
+        renderOrder = 100;
     }
 
     ~Goal()

@@ -1,39 +1,62 @@
 ﻿class GameObject
 {
-    public int x;
-    public int y;
+    public Transform transform;
 
-    public GameObject() // 생성자 무조건 생성!
+    public List<Component> components;
+
+    public string name;
+
+    public GameObject()
     {
-        x = 0;
-        y = 0;
+        name = "";
+        transform = new Transform();
+        components = new List<Component>();
+
+        components.Add(transform);
     }
 
-    public GameObject(int newX, int newY)
+    public T? GetComponent<T>() where T : Component
     {
-        x = newX;
-        y = newY;
+        int findIndex = -1;
+
+        for (int i = 0; i < components.Count; i++)
+        {
+            if(components[i] is T)
+            {
+                findIndex = i;
+                break;
+            }
+        }
+
+        if (findIndex > 0)
+        {
+            return (T)components[findIndex];
+        }
+        else
+        {
+            return null;
+        }
     }
 
-    ~GameObject() // 소멸자도!
+    public T AddComponent<T>() where T : Component, new ()
     {
+        T newT = new T();
+        newT.gameObject = this;
+        newT.transform = transform;
+        components.Add(newT);
 
-    }
-    public virtual void Start()
-    {
-
-    }
-
-    public virtual void Update()
-    {
-
+        return newT;
     }
 
-    public virtual void Render()
+    /*public void RemoveComponent<T> where T : Component
     {
-        Console.SetCursorPosition(x, y);
-        Console.Write(shape);
-    }
-
-    public char shape;                                                             
+        for (int i = 0;i < components.Count;i++)
+        {
+            if (components[i] is T)
+            {
+                components.RemoveAt(i);
+                break;
+            }
+        }
+    }*/
 }

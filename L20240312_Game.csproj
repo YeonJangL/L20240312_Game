@@ -7,4 +7,12 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Compile Remove="Floor.cs" />
+    <Compile Remove="Goal.cs" />
+    <Compile Remove="Monster.cs" />
+    <Compile Remove="Player.cs" />
+    <Compile Remove="Wall.cs" />
+  </ItemGroup>
+
 </Project>

@@ -1,15 +1,21 @@
-﻿class Floor : GameObject
+﻿
+
+
+class Floor : GameObject
 {
     public Floor()
     {
         shape = ' ';
+        renderOrder = 10;
     }
 
     public Floor(int newX, int newY)
     {
         shape = ' ';
+
         x = newX;
         y = newY;
+        renderOrder = 10;
     }
 
     ~Floor()
@@ -29,6 +35,6 @@
 
     public override void Render()
     {
-        // base.Render();
+        base.Render();
     }
 }
