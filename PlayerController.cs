@@ -57,7 +57,7 @@
                     transform.y = oldy;
                     break;
                 }
-                if (findComponent.Check(gameObject) && findComponent.isTrigger == false)
+                if (findComponent.Check(gameObject) && findComponent.isTrigger == true)
                 {
                     OnTrigger(findGameObject);
                 }
