@@ -1,4 +1,5 @@
-﻿using System.Data;
+﻿using SDL2;
+using System.Data;
 
 class Engine
 {   
@@ -31,6 +32,13 @@ class Engine
     public bool isNextLoading = false;
     public string nextSceneName = string.Empty;
 
+    public IntPtr myWindow;
+    public IntPtr myRenderer;
+    public SDL.SDL_Event myEvent;
+
+    public ulong deltaTime;
+    protected ulong lastTime;
+
     public void NextLoadScene(string _nextSceneName)
     {
         isNextLoading = true;
@@ -40,6 +48,18 @@ class Engine
 
     public void Init()
     {
+        if (SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING) < 0)
+        {
+            Console.WriteLine("Init fail.");
+        }
+
+        myWindow = SDL.SDL_CreateWindow("2D Engine", 100, 100, 640, 480, SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN);
+
+        myRenderer = SDL.SDL_CreateRenderer(myWindow, -1,
+            SDL.SDL_RendererFlags.SDL_RENDERER_ACCELERATED |
+            SDL.SDL_RendererFlags.SDL_RENDERER_PRESENTVSYNC |
+            SDL.SDL_RendererFlags.SDL_RENDERER_TARGETTEXTURE);
+
         Input.Init();
     }
 
@@ -76,6 +96,7 @@ class Engine
                     newGameObject.transform.y = y;
                     SpriteRenderer renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = '*';
+                    renderer.Load("wall.bmp");
                     renderer.renderOrder = RenderOder.Wall;
                     newGameObject.AddComponent<Collider2D>();
 
@@ -85,6 +106,7 @@ class Engine
                     newGameObject.transform.y = y;
                     renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = ' ';
+                    renderer.Load("floor.bmp");
                     renderer.renderOrder = RenderOder.Floor;
                     //Instantiate(new Wall(x, y));
                     //Instantiate(new Floor(x, y));
@@ -99,6 +121,7 @@ class Engine
                     newGameObject.transform.y = y;
                     SpriteRenderer renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = ' ';
+                    renderer.Load("floor.bmp");
                     renderer.renderOrder = RenderOder.Floor;
                     //Instantiate(new Floor(x, y));
                 }
@@ -110,6 +133,11 @@ class Engine
                     newGameObject.transform.y = y;
                     SpriteRenderer renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = 'P';
+                    renderer.colorKey.g = 0;
+                    renderer.Load("test.bmp");
+                    renderer.isMultiple = true;
+                    renderer.spriteCount = 5;
+
                     renderer.renderOrder = RenderOder.Player;
                     newGameObject.AddComponent<PlayerController>();
                     Collider2D collider2D = newGameObject.AddComponent<Collider2D>();
@@ -121,6 +149,7 @@ class Engine
                     newGameObject.transform.y = y;
                     renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = ' ';
+                    renderer.Load("floor.bmp");
                     renderer.renderOrder = RenderOder.Floor;
 
                     //Instantiate(new Player(x, y));
@@ -135,6 +164,7 @@ class Engine
                     newGameObject.transform.y = y;
                     SpriteRenderer renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = 'G';
+                    renderer.Load("coin.bmp");
                     renderer.renderOrder = RenderOder.Goal;
                     Collider2D collider2D = newGameObject.AddComponent<Collider2D>();
                     collider2D.isTrigger = true;
@@ -145,6 +175,7 @@ class Engine
                     newGameObject.transform.y = y;
                     renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = ' ';
+                    renderer.Load("floor.bmp");
                     renderer.renderOrder = RenderOder.Floor;
                     //Instantiate(new Goal(x, y));
                     //Instantiate(new Floor(x, y));
@@ -159,6 +190,7 @@ class Engine
                     SpriteRenderer renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.renderOrder = RenderOder.Monster;
                     renderer.Shape = 'M';
+                    renderer.Load("slime.bmp");
                     Collider2D collider2D = newGameObject.AddComponent<Collider2D>();
                     collider2D.isTrigger = true;
                     newGameObject.AddComponent<AIController>();
@@ -169,6 +201,7 @@ class Engine
                     newGameObject.transform.y = y;
                     renderer = newGameObject.AddComponent<SpriteRenderer>();
                     renderer.Shape = ' ';
+                    renderer.Load("floor.bmp");
                     renderer.renderOrder = RenderOder.Floor;
                     //Instantiate(new Monster(x, y));
                     //Instantiate(new Floor(x, y));
@@ -225,8 +258,14 @@ class Engine
 
     public void Run()
     {
+        bool isFirst = true;
         while (isRunning)
         {
+            if (isFirst)
+            {
+                StartInAllComponents();
+                isFirst = false;
+            }
             ProcessInput();
             Update();
             Render();
@@ -237,13 +276,27 @@ class Engine
                 isNextLoading = false;
                 nextSceneName = string.Empty;
             }
-
         } //frame
+    }
+
+    protected void StartInAllComponents()
+    {
+        foreach(GameObject gameObject in gameObjects)
+        {
+            foreach(Component component in gameObject.components)
+            {
+                component.Start();
+            }
+        }
     }
 
     public void Term()
     {
         gameObjects.Clear();
+
+        SDL.SDL_DestroyRenderer(myRenderer);
+        SDL.SDL_DestroyWindow(myWindow);
+        SDL.SDL_Quit();
     }
 
     public T Instantiate<T>() where T : GameObject, new()
@@ -263,11 +316,14 @@ class Engine
 
     protected void ProcessInput()
     {
-        Input.keyInfo = Console.ReadKey();
+        SDL.SDL_PollEvent(out myEvent);
+        // Input.keyInfo = Console.ReadKey();
     }
 
     protected void Update()
     {
+        deltaTime = SDL.SDL_GetTicks64() - lastTime;
+        // Console.WriteLine(deltaTime);
         foreach (GameObject gameObject in gameObjects)
         {
             foreach (Component component in gameObject.components)
@@ -275,6 +331,8 @@ class Engine
                 component.Update();
             }
         }
+        lastTime = SDL.SDL_GetTicks64();
+
         /*foreach (GameObject gameObject in gameObjects)
         {
             gameObject.Update();
@@ -287,7 +345,7 @@ class Engine
         //{
         //    gameObjects[i].Render();
         //}
-        Console.Clear();
+        // Console.Clear();
         foreach (GameObject gameObject in gameObjects)
         {
             Renderer? renderer = gameObject.GetComponent<Renderer>();
@@ -296,6 +354,8 @@ class Engine
                 renderer.Render();
             }
         }
+
+        SDL.SDL_RenderPresent(Engine.GetInstance().myRenderer);
     }
 
     public GameObject? Find(string name)

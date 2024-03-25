@@ -1,31 +1,40 @@
-﻿class PlayerController : Component
+﻿using SDL2;
+
+class PlayerController : Component
 {
+    public SpriteRenderer spriteRenderer;
+    public override void Start()
+    {
+        spriteRenderer = gameObject.GetComponent<SpriteRenderer>();
+    }
+
     public override void Update()
     {
-        if (transform == null)
+        /*if (transform == null)
         {
             return;
-        }
+        }*/
 
         int oldx = transform.x;
         int oldy = transform.y;
-        if (Input.GetButton("Left"))
+
+        if (Input.GetKey(SDL.SDL_Keycode.SDLK_a))
         {
             transform.Translate(-1, 0);
         }
-        if (Input.GetButton("Right"))
+        if (Input.GetKey(SDL.SDL_Keycode.SDLK_d))
         {
             transform.Translate(1, 0);
         }
-        if (Input.GetButton("Up"))
+        if (Input.GetKey(SDL.SDL_Keycode.SDLK_w))
         {
             transform.Translate(0, -1);
         }
-        if (Input.GetButton("Down"))
+        if (Input.GetKey(SDL.SDL_Keycode.SDLK_s))
         {
             transform.Translate(0, 1);
         }
-        if (Input.GetButton("Quit"))
+        if (Input.GetKey(SDL.SDL_Keycode.SDLK_ESCAPE))
         {
             //singleton pattern
             Engine.GetInstance().Stop();
